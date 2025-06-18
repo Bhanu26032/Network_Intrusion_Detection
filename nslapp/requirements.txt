@@ -1,0 +1,7 @@
+Django>=3.2
+scikit-learn
+joblib
+numpy
+pandas
+matplotlib
+notebook
