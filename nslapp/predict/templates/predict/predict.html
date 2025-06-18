@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSL-KDD Attack Prediction</title>
+    <style>
+        /* Styling for the top bar */
+        .top-bar {
+            height: 50px;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+            font-size: 24px;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        /* General body styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 70px 20px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+
+        /* Main container */
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        /* Form and input styling */
+        .form-container {
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group label {
+            font-size: 16px;
+            margin-right: 10px;
+            width: 250px;
+            text-align: right;
+        }
+
+        .input-group input {
+            width: 150px;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 12px 30px;
+            margin-top: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Result container */
+        .result-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Success/Normal Case */
+        .safe {
+            background-color: green;
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        /* Attack Case */
+        .attack {
+            background-color: #f44336;
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        /* Error Message */
+        .error {
+            color: #f44336;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .input-group label {
+                text-align: left;
+                margin-bottom: 5px;
+                width: 100%;
+            }
+            
+            .input-group input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        NSL KDD Attack Prediction
+    </div>
+
+    <div class="main-container">
+        <div class="form-container">
+            <h2>Enter 17 Features for Prediction</h2>
+            <form method="post">
+                {% csrf_token %}
+                <!-- Dynamically generate input fields for each feature -->
+                <div class="input-group">
+                    <label for="src_bytes">src_bytes:</label>
+                    <input type="number" step="any" name="feature1" value="{{ features.feature1 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="service">service:</label>
+                    <input type="number" step="any" name="feature2" value="{{ features.feature2 }}" required>
+                </div>
+                <!-- Continue with other features... -->
+                <div class="input-group">
+                    <label for="dst_bytes">dst_bytes:</label>
+                    <input type="number" step="any" name="feature3" value="{{ features.feature3 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="flag">flag:</label>
+                    <input type="number" step="any" name="feature4" value="{{ features.feature4 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="same_srv_rate">same_srv_rate:</label>
+                    <input type="number" step="any" name="feature5" value="{{ features.feature5 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="diff_srv_rate">diff_srv_rate:</label>
+                    <input type="number" step="any" name="feature6" value="{{ features.feature6 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="dst_host_srv_count">dst_host_srv_count:</label>
+                    <input type="number" step="any" name="feature7" value="{{ features.feature7 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="dst_host_same_srv_rate">dst_host_same_srv_rate:</label>
+                    <input type="number" step="any" name="feature8" value="{{ features.feature8 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="logged_in">logged_in:</label>
+                    <input type="number" step="any" name="feature9" value="{{ features.feature9 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="dst_host_serror_rate">dst_host_serror_rate:</label>
+                    <input type="number" step="any" name="feature10" value="{{ features.feature10 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="dst_host_diff_srv_rate">dst_host_diff_srv_rate:</label>
+                    <input type="number" step="any" name="feature11" value="{{ features.feature11 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="dst_host_srv_serror_rate">dst_host_srv_serror_rate:</label>
+                    <input type="number" step="any" name="feature12" value="{{ features.feature12 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="serror_rate">serror_rate:</label>
+                    <input type="number" step="any" name="feature13" value="{{ features.feature13 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="srv_serror_rate">srv_serror_rate:</label>
+                    <input type="number" step="any" name="feature14" value="{{ features.feature14 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="count">count:</label>
+                    <input type="number" step="any" name="feature15" value="{{ features.feature15 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="dst_host_srv_diff_host_rate">dst_host_srv_diff_host_rate:</label>
+                    <input type="number" step="any" name="feature16" value="{{ features.feature16 }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="level">level:</label>
+                    <input type="number" step="any" name="feature17" value="{{ features.feature17 }}" required>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button type="submit">Predict</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="result-container">
+            {% if attack_type %}
+                <!-- Display results based on attack type -->
+                {% if attack_type == "normal" %}
+                    <div class="safe">
+                        Safe: No attack detected!
+                    </div>
+                {% else %}
+                    <div class="attack">
+                        Attack Detected: {{ attack_type }}
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            {% if error %}
+                <!-- Display error message if any -->
+                <div class="error">
+                    Error: {{ error }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
